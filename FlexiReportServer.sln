@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlexiReportServer", "FlexiReportServer.csproj", "{C5C9018E-4463-44D7-9BFA-A8BEE2A9D49E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C5C9018E-4463-44D7-9BFA-A8BEE2A9D49E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5C9018E-4463-44D7-9BFA-A8BEE2A9D49E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5C9018E-4463-44D7-9BFA-A8BEE2A9D49E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5C9018E-4463-44D7-9BFA-A8BEE2A9D49E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {962B0913-9F71-43C1-91A2-774E84DC36F4}
+	EndGlobalSection
+EndGlobal
