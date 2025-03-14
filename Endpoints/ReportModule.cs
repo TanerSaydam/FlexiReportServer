@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using TS.Result;
-using FlexiReportServer.Context;
+﻿using FlexiReportServer.Context;
 using FlexiReportServer.Dtos;
 using FlexiReportServer.Models;
+using Microsoft.EntityFrameworkCore;
+using TS.Result;
 
 namespace FlexiReportServer.Endpoints;
 
@@ -19,7 +19,7 @@ public static class ReportModule
 
                 if (request.Id is not null)
                 {
-                    report = await dbContext.Reports.FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
+                    report = await dbContext.Reports.Where(p => p.Id == request.Id).Include(i => i.RequestElements).FirstOrDefaultAsync(cancellationToken);
                     if (report is not null)
                     {
                         report.Content = request.Content;
@@ -30,7 +30,24 @@ public static class ReportModule
                         report.PageSize = request.PageSize;
                         report.FontFamily = request.FontFamily;
                         report.SqlQuery = request.SqlQuery;
+                        report.BackgroundColor = request.BackgroundColor;
                         dbContext.Update(report);
+
+                        if (report.RequestElements!.Any())
+                        {
+                            dbContext.RemoveRange(report.RequestElements!);
+                        }
+
+                        var newElements = request.RequestElements.Select(s => new RequestElement()
+                        {
+                            ReportId = report.Id,
+                            Index = s.Index,
+                            Label = s.Label,
+                            Name = s.Name,
+                            Type = s.Type,
+                            Endpoint = s.Endpoint,
+                        }).ToList();
+                        dbContext.AddRange(newElements);
                     }
                 }
                 else
@@ -44,7 +61,16 @@ public static class ReportModule
                         PageSize = request.PageSize,
                         FontFamily = request.FontFamily,
                         PageOrientation = request.PageOrientation,
-                        SqlQuery = request.SqlQuery
+                        SqlQuery = request.SqlQuery,
+                        BackgroundColor = request.BackgroundColor,
+                        RequestElements = request.RequestElements.Select(s => new RequestElement()
+                        {
+                            Index = s.Index,
+                            Label = s.Label,
+                            Name = s.Name,
+                            Type = s.Type,
+                            Endpoint = s.Endpoint,
+                        }).ToList()
                     };
                     dbContext.Add(report);
                 }
@@ -56,7 +82,12 @@ public static class ReportModule
         app.MapGet(string.Empty,
             async (ApplicationDbContext dbContext, CancellationToken cancellationToken) =>
             {
-                var reports = await dbContext.Reports.ToListAsync(cancellationToken);
+                var reports = await dbContext.Reports.Select(s => new
+                {
+                    Id = s.Id,
+                    Endpoint = s.Endpoint,
+                    Name = s.Name
+                }).ToListAsync(cancellationToken);
                 return Results.Ok(reports);
             })
             .Produces<List<Report>>();
@@ -64,7 +95,15 @@ public static class ReportModule
         app.MapGet("{id}",
             async (Guid id, ApplicationDbContext dbContext, CancellationToken cancellationToken) =>
             {
-                var report = await dbContext.Reports.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+                var report = await dbContext.Reports
+                .Where(p => p.Id == id)
+                .Include(i => i.RequestElements)
+                .FirstOrDefaultAsync(cancellationToken);
+
+                if (report != null)
+                {
+                    report.RequestElements = report.RequestElements!.OrderBy(p => p.Index).ToList();
+                }
                 return Results.Ok(report);
             })
             .Produces<Report>();
@@ -72,10 +111,14 @@ public static class ReportModule
         app.MapDelete("{id}",
             async (Guid id, ApplicationDbContext dbContext, CancellationToken cancellationToken) =>
             {
-                var report = await dbContext.Reports.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+                var report = await dbContext.Reports.Where(p => p.Id == id).Include(i => i.RequestElements).FirstOrDefaultAsync(cancellationToken);
                 if (report is not null)
                 {
                     dbContext.Remove(report);
+                    if (report.RequestElements!.Any())
+                    {
+                        dbContext.RemoveRange(report.RequestElements!);
+                    }
                     await dbContext.SaveChangesAsync(cancellationToken);
                 }
                 return Results.Ok();

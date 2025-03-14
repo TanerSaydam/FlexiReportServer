@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using FlexiReportServer.Models;
+﻿using FlexiReportServer.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlexiReportServer.Context;
 
@@ -16,4 +16,5 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<Salesman> Salesmans { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
     public DbSet<InvoiceDetail> InvoiceDetails { get; set; }
+    public DbSet<RequestElement> RequestElements { get; set; }
 }

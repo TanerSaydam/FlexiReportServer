@@ -1,8 +1,8 @@
 ﻿using Bogus;
-using Microsoft.EntityFrameworkCore;
 using FlexiReportServer.Context;
 using FlexiReportServer.Dtos;
 using FlexiReportServer.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlexiReportServer.Endpoints;
 
@@ -84,11 +84,13 @@ public static class InvoiceModule
                 return Results.Created();
             });
 
-        app.MapGet(string.Empty,
-            async (ApplicationDbContext dbContext, CancellationToken cancellationToken) =>
+        app.MapPost(string.Empty,
+            async (RequestDto request, ApplicationDbContext dbContext, CancellationToken cancellationToken) =>
             {
                 var invoices =
                 await dbContext.Invoices
+                .Where(p => p.Date >= request.StartDate && p.Date <= request.EndDate)
+                .Where(p => request.Search != null ? p.InvoiceNumber.Contains(request.Search) : true)
                 .Include(i => i.InvoiceDetails!)
                 .ThenInclude(i => i.Product)
                 .Include(s => s.Salesman)

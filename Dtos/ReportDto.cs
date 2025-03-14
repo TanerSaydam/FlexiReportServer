@@ -8,4 +8,13 @@ public sealed record ReportDto(
     string PageSize,
     string PageOrientation,
     string FontFamily,
-    string SqlQuery);
+    string SqlQuery,
+    string BackgroundColor,
+    List<RequestElementDto> RequestElements);
+
+public sealed record RequestElementDto(
+    int Index,
+    string Label,
+    string Type,
+    string Name,
+    string? Endpoint);

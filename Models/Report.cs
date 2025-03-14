@@ -15,4 +15,6 @@ public sealed class Report
     public string PageOrientation { get; set; } = default!;
     public string FontFamily { get; set; } = default!;
     public string SqlQuery { get; set; } = string.Empty!;
+    public string BackgroundColor { get; set; } = string.Empty!;
+    public List<RequestElement>? RequestElements { get; set; }
 }

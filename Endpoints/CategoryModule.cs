@@ -1,8 +1,8 @@
 ﻿using Bogus;
-using Microsoft.EntityFrameworkCore;
 using FlexiReportServer.Context;
 using FlexiReportServer.Dtos;
 using FlexiReportServer.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlexiReportServer.Endpoints;
 
@@ -39,11 +39,12 @@ public static class CategoryModule
                 return Results.Created();
             });
 
-        app.MapGet(string.Empty,
-            async (ApplicationDbContext dbContext, CancellationToken cancellationToken) =>
+        app.MapPost(string.Empty,
+            async (RequestDto request, ApplicationDbContext dbContext, CancellationToken cancellationToken) =>
             {
                 var categories =
                 await dbContext.Categories
+                .Where(p => request.Search != null ? p.Name.Contains(request.Search) : true)
                  .Join(dbContext.Products, c => c.Id, p => p.CategoryId, (c, p) => new { c, p })
                 .GroupBy(g => g.c.Id)
                 .Select(s => new CategoryDto

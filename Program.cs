@@ -126,8 +126,7 @@ app.MapPost("prompt",
                 new { role = "system", content = $"""
             You are a SQL expert specialized in Microsoft SQL Server (MSSQL).  
             Find the most suitable tables from the given database schema and generate an optimized, valid, and modern SQL query for MSSQL.  
-            Return the SQL query with short inline comments explaining the purpose of each line.  
-            Ensure comments are placed at the end of each line using `--`.  
+            Return the SQL query.
             Do not include additional explanations or unnecessary characters.  
             Do not wrap the query in triple quotes or code blocks.  
             Use `TOP` instead of `LIMIT` when selecting a specific number of rows.  

@@ -1,7 +1,8 @@
 ﻿using Bogus;
-using Microsoft.EntityFrameworkCore;
 using FlexiReportServer.Context;
+using FlexiReportServer.Dtos;
 using FlexiReportServer.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlexiReportServer.Endpoints;
 
@@ -36,10 +37,12 @@ public static class SalesmanModule
                 return Results.Created();
             });
 
-        app.MapGet(string.Empty,
-            async (ApplicationDbContext dbContext, CancellationToken cancellationToken) =>
+        app.MapPost(string.Empty,
+            async (RequestDto request, ApplicationDbContext dbContext, CancellationToken cancellationToken) =>
             {
-                var salesmans = await dbContext.Salesmans.ToListAsync(cancellationToken);
+                var salesmans = await dbContext.Salesmans
+                .Where(p => request.Search != null ? p.Name.Contains(request.Search) : true)
+                .ToListAsync(cancellationToken);
                 return Results.Ok(salesmans);
             })
             .Produces<List<Salesman>>();
