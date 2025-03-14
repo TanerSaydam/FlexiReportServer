@@ -1,8 +1,10 @@
+using System.Text;
 using FlexiReportServer.Context;
 using FlexiReportServer.Dtos;
 using FlexiReportServer.Endpoints;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +17,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 {
     opt.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=eCommerceDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
 });
+
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
@@ -107,5 +111,37 @@ app.MapPost("execute-query",
         {
             return Results.BadRequest(new { Error = "Sorgu �al��t�r�lamad�.", Details = ex.Message });
         }
+    });
+
+app.MapPost("prompt",
+    async (AIRequestDto request, HttpClient httpClient, CancellationToken cancellationToken) =>
+    {
+        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {request.ApiKey}");
+
+        var requestBody = new
+        {
+            model = request.Model,
+            messages = new[]
+            {
+                new { role = "system", content = $"""
+            You are a SQL expert specialized in Microsoft SQL Server (MSSQL).  
+            Find the most suitable tables from the given database schema and generate an optimized, valid, and modern SQL query for MSSQL.  
+            Return the SQL query with short inline comments explaining the purpose of each line.  
+            Ensure comments are placed at the end of each line using `--`.  
+            Do not include additional explanations or unnecessary characters.  
+            Do not wrap the query in triple quotes or code blocks.  
+            Use `TOP` instead of `LIMIT` when selecting a specific number of rows.  
+            Here is the database schema: {request.Schema}
+        """ },
+                new { role = "user", content = request.Prompt}
+            }
+        };
+
+        var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
+        var response = await httpClient.PostAsync("https://api.openai.com/v1/chat/completions", content);
+        var responseString = await response.Content.ReadAsStringAsync();
+
+        dynamic? jsonResponse = JsonConvert.DeserializeObject(responseString);
+        return Results.Ok(jsonResponse?.choices[0].message.content.ToString());
     });
 app.Run();
