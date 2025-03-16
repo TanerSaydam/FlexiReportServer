@@ -22,6 +22,86 @@ namespace FlexiReportServer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("FlexiReport.Models.Report", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BackgroundColor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Endpoint")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FontFamily")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PageOrientation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PageSize")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SqlQuery")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Reports");
+                });
+
+            modelBuilder.Entity("FlexiReport.Models.RequestElement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Endpoint")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ReportId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReportId");
+
+                    b.ToTable("RequestElements");
+                });
+
             modelBuilder.Entity("FlexiReportServer.Models.Category", b =>
                 {
                     b.Property<Guid>("Id")
@@ -152,86 +232,6 @@ namespace FlexiReportServer.Migrations
                     b.ToTable("ProductDetails");
                 });
 
-            modelBuilder.Entity("FlexiReportServer.Models.Report", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BackgroundColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Endpoint")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FontFamily")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PageOrientation")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PageSize")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SqlQuery")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Reports");
-                });
-
-            modelBuilder.Entity("FlexiReportServer.Models.RequestElement", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Endpoint")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Index")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Label")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ReportId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReportId");
-
-                    b.ToTable("RequestElements");
-                });
-
             modelBuilder.Entity("FlexiReportServer.Models.Salesman", b =>
                 {
                     b.Property<Guid>("Id")
@@ -245,6 +245,15 @@ namespace FlexiReportServer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Salesmans");
+                });
+
+            modelBuilder.Entity("FlexiReport.Models.RequestElement", b =>
+                {
+                    b.HasOne("FlexiReport.Models.Report", null)
+                        .WithMany("RequestElements")
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("FlexiReportServer.Models.Invoice", b =>
@@ -295,13 +304,9 @@ namespace FlexiReportServer.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FlexiReportServer.Models.RequestElement", b =>
+            modelBuilder.Entity("FlexiReport.Models.Report", b =>
                 {
-                    b.HasOne("FlexiReportServer.Models.Report", null)
-                        .WithMany("RequestElements")
-                        .HasForeignKey("ReportId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("RequestElements");
                 });
 
             modelBuilder.Entity("FlexiReportServer.Models.Invoice", b =>
@@ -312,11 +317,6 @@ namespace FlexiReportServer.Migrations
             modelBuilder.Entity("FlexiReportServer.Models.Product", b =>
                 {
                     b.Navigation("ProductDetails");
-                });
-
-            modelBuilder.Entity("FlexiReportServer.Models.Report", b =>
-                {
-                    b.Navigation("RequestElements");
                 });
 #pragma warning restore 612, 618
         }

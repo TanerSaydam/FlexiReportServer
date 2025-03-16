@@ -24,39 +24,6 @@ namespace FlexiReportServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Invoices",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    InvoiceNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Date = table.Column<DateOnly>(type: "date", nullable: false),
-                    CustomerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SalesmanId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Invoices", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Reports",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Endpoint = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PageSize = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PageOrientation = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FontFamily = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Reports", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Salesmans",
                 columns: table => new
                 {
@@ -91,22 +58,22 @@ namespace FlexiReportServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "InvoiceDetails",
+                name: "Invoices",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    InvoiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    InvoiceNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    CustomerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SalesmanId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_InvoiceDetails", x => x.Id);
+                    table.PrimaryKey("PK_Invoices", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_InvoiceDetails_Invoices_InvoiceId",
-                        column: x => x.InvoiceId,
-                        principalTable: "Invoices",
+                        name: "FK_Invoices_Salesmans_SalesmanId",
+                        column: x => x.SalesmanId,
+                        principalTable: "Salesmans",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -134,10 +101,47 @@ namespace FlexiReportServer.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "InvoiceDetails",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InvoiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InvoiceDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InvoiceDetails_Invoices_InvoiceId",
+                        column: x => x.InvoiceId,
+                        principalTable: "Invoices",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InvoiceDetails_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_InvoiceDetails_InvoiceId",
                 table: "InvoiceDetails",
                 column: "InvoiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InvoiceDetails_ProductId",
+                table: "InvoiceDetails",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoices_SalesmanId",
+                table: "Invoices",
+                column: "SalesmanId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductDetails_ProductId",
@@ -160,16 +164,13 @@ namespace FlexiReportServer.Migrations
                 name: "ProductDetails");
 
             migrationBuilder.DropTable(
-                name: "Reports");
-
-            migrationBuilder.DropTable(
-                name: "Salesmans");
-
-            migrationBuilder.DropTable(
                 name: "Invoices");
 
             migrationBuilder.DropTable(
                 name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "Salesmans");
 
             migrationBuilder.DropTable(
                 name: "Categories");

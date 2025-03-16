@@ -8,7 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Bogus" Version="35.6.2" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
+    <PackageReference Include="FlexiReport" Version="9.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.3">
@@ -17,7 +18,7 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="OpenAI" Version="2.1.0" />
-    <PackageReference Include="Scalar.AspNetCore" Version="2.0.29" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.0.36" />
     <PackageReference Include="TS.Result" Version="9.0.1" />
   </ItemGroup>
 

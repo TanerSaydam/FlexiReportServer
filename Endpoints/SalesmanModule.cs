@@ -1,6 +1,5 @@
 ﻿using Bogus;
 using FlexiReportServer.Context;
-using FlexiReportServer.Dtos;
 using FlexiReportServer.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,10 +37,9 @@ public static class SalesmanModule
             });
 
         app.MapPost(string.Empty,
-            async (RequestDto request, ApplicationDbContext dbContext, CancellationToken cancellationToken) =>
+            async (ApplicationDbContext dbContext, CancellationToken cancellationToken) =>
             {
                 var salesmans = await dbContext.Salesmans
-                .Where(p => request.Search != null ? p.Name.Contains(request.Search) : true)
                 .ToListAsync(cancellationToken);
                 return Results.Ok(salesmans);
             })

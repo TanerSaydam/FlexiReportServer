@@ -89,11 +89,11 @@ public static class InvoiceModule
             {
                 var invoices =
                 await dbContext.Invoices
-                .Where(p => p.Date >= request.StartDate && p.Date <= request.EndDate)
-                .Where(p => request.Search != null ? p.InvoiceNumber.Contains(request.Search) : true)
                 .Include(i => i.InvoiceDetails!)
                 .ThenInclude(i => i.Product)
                 .Include(s => s.Salesman)
+                .Where(i => i.Date >= request.StartDate && i.Date <= request.EndDate)
+                .Where(i => request.Search != null ? i.InvoiceNumber.Contains(request.Search) : true)
                 .Select(s => new InvoiceDto
                 {
                     Id = s.Id,
@@ -103,6 +103,7 @@ public static class InvoiceModule
                     SalesmanName = s.Salesman!.Name,
                     Total = s.InvoiceDetails!.Sum(s => s.Quantity * s.Price)
                 })
+                .OrderBy(o => o.Date)
                 .ToListAsync(cancellationToken);
                 return Results.Ok(invoices);
             })

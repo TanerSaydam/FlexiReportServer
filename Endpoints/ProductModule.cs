@@ -48,9 +48,9 @@ public static class ProductModule
             {
                 var products =
                 await dbContext.Products
-                .Where(p => request.Search != null ? p.Name.Contains(request.Search) : true)
                 .Include(i => i.Category)
                 .Include(i => i.ProductDetails)
+                .Where(p => string.IsNullOrEmpty(request.Search) ? true : p.CategoryId.ToString().Contains(request.Search))
                 .Select(s => new ProductDto
                 {
                     Id = s.Id,
